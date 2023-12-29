@@ -1,0 +1,90 @@
+***begin-file-set***
+
+start ../../image-manager-2024-12-24-v03/src/functions/core/delegates/image-manager-delegate.js
+javascript
+
+exports.createImage = async (event) => {
+  // Direct CRUD operations with DynamoDB, S3, etc.
+  // console.log("Creating image:", event);
+  console.log(
+    `PMM - SF - image-manager-delegate.js -- createImage initiated - event is: ${JSON.stringify(
+      event
+    )}`
+  );
+  const result = {
+    data: { id: "0001", name: "record001" },
+    message: `image-manager-delegate.js - createImage successfully concluded`,
+  };
+  console.log(
+    `PMM - SF - core/delegates/image-manager-delegate.js -- now returning result of: ${JSON.stringify(
+      result
+    )}`
+  );
+  return result;
+  // Return response or perform operations
+};
+
+// Define other CRUD operations similarly
+
+end
+
+start ../../image-manager-2024-12-24-v03/src/functions/core/services/image-manager-service.js
+javascript
+
+const imageManagerDelegate = require("../delegates/image-manager-delegate");
+
+exports.createImage = async (event) => {
+  // Business logic here
+  console.log(
+    `PMM - SF - core/services/image-manager-service.js -- createImage initiated - event is: ${JSON.stringify(
+      event
+    )}`
+  );
+  return imageManagerDelegate.createImage(event);
+  // Delegate to CRUD operations
+};
+
+// Define other operations (update, delete, etc.) similarly
+
+end
+
+start ../../image-manager-2024-12-24-v03/src/functions/image-manager-lambda.js
+javascript
+
+const imageManagerService = require("./core/services/image-manager-service");
+// const imageManagerService = require("./image-manager-service");
+
+exports.handler = async (event) => {
+  console.log(
+    `PMM - SF - image-manager-lambda.js -- handler initiated - event is: ${JSON.stringify(
+      event
+    )}`
+  );
+
+  switch (event.operationType) {
+    case "CREATE":
+      if (event.entityType === "IMAGE") {
+        console.log(
+          `PMM - SF - image-manager-lambda.js -- handler initiated - event.entityType is: ${JSON.stringify(
+            event.entityType
+          )}`
+        );
+        const result = await imageManagerService.createImage(event);
+        console.log(
+          `PMM - SF - Lambda Returning to FE - result is: ${JSON.stringify(
+            result
+          )}`
+        );
+        return result;
+        // return imageManagerService.createImage(event);
+      }
+      break;
+    // Handle other cases (UPDATE, DELETE, GET, LIST) similarly
+    default:
+      throw new Error(`Unknown operation: ${event.operationType}`);
+  }
+};
+
+end
+
+end-file-set

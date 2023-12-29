@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 
 const BEGIN_FILE_SET = "***begin-file-set***";
-const END_FILE_SET = "***end-file-set***";
+const END_FILE_SET = "end-file-set";
 const START_FILE = "start";
 const END_FILE = "end";
 
@@ -21,7 +21,7 @@ const compileFiles = (dirPath, outputFile) => {
           const relativePath = path.relative(__dirname, filePath);
           const fileType = filePath.endsWith(".js") ? "javascript" : "json";
 
-          compiledContent += `${START_FILE} ${relativePath} ${fileType}\n\n${fileContent}\n${END_FILE}\n\n`;
+          compiledContent += `${START_FILE} ${relativePath}\n${fileType}\n\n${fileContent}\n${END_FILE}\n\n`;
         }
       }
     });
@@ -44,6 +44,9 @@ if (process.argv.length !== 4) {
   );
   process.exit(1);
 }
+
+// Setting environment variables (optional, modify as needed)
+// process.env.MY_ENV_VARIABLE = 'value';
 
 // Retrieving directory path and output file from command-line arguments
 const dirPath = process.argv[2];

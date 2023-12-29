@@ -1,45 +1,54 @@
 const fs = require("fs");
 const path = require("path");
 
-const START_TOKEN = "***start***";
-const END_TOKEN = "***end***";
+const BEGIN_FILE_SET = "***begin-file-set***";
+const END_FILE_SET = "end-file-set";
+const START_FILE = "start";
+const END_FILE = "end";
 
-const parseFile = (filePath) => {
-  try {
-    // Read the content of the file
-    const fileContent = fs.readFileSync(filePath, "utf8");
-    const fileBlocks = fileContent.split(END_TOKEN);
+const parseCompiledFile = (inputFile, outputFolder) => {
+  const fileContent = fs.readFileSync(inputFile, "utf8");
+  const lines = fileContent.split("\n");
 
-    fileBlocks.forEach((block) => {
-      const startTokenIndex = block.indexOf(START_TOKEN);
-      if (startTokenIndex !== -1) {
-        const fileContent = block.substring(
-          startTokenIndex + START_TOKEN.length
-        );
-        const firstLineEndIndex = fileContent.indexOf("\n");
-        const fileName = fileContent.substring(0, firstLineEndIndex).trim();
-        const fileData = fileContent.substring(firstLineEndIndex).trim();
+  let currentFile = null;
+  let fileData = "";
+  let isInFile = false;
 
-        try {
-          // Creating directories based on the fileName
-          const dirPath = path.join(
-            __dirname,
-            ...fileName.split("/").slice(0, -1)
-          );
-          fs.mkdirSync(dirPath, { recursive: true });
-
-          // Write the file
-          const fullPath = path.join(__dirname, fileName);
-          fs.writeFileSync(fullPath, fileData);
-        } catch (writeError) {
-          console.error(`Error writing file ${fileName}:`, writeError.message);
-        }
-      }
-    });
-  } catch (readError) {
-    console.error("Error reading the input file:", readError.message);
+  for (const line of lines) {
+    if (line.startsWith(START_FILE)) {
+      const parts = line.split(" ");
+      currentFile = parts[1];
+      isInFile = true;
+      fileData = "";
+    } else if (line === END_FILE) {
+      isInFile = false;
+      // Write file data to the output folder
+      const outputPath = path.join(outputFolder, currentFile);
+      fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+      fs.writeFileSync(outputPath, fileData);
+      console.log(`File written: ${outputPath}`);
+    } else if (isInFile) {
+      fileData += line + "\n";
+    }
   }
 };
 
-// Replace 'path/to/your/projectFiles.txt' with the actual path
-parseFile("path/to/your/projectFiles.txt");
+// Check for correct number of command-line arguments
+if (process.argv.length < 3) {
+  console.error(
+    "Usage: node parser.js <input-parse-content.txt> [OUTPUTFOLDER=<output-folder-path>]"
+  );
+  process.exit(1);
+}
+
+// Retrieve the input file path from command-line arguments
+const inputFile = process.argv[2];
+
+// Optional output folder
+let outputFolder = ".";
+if (process.argv.length === 4 && process.argv[3].startsWith("OUTPUTFOLDER=")) {
+  outputFolder = process.argv[3].split("=")[1];
+}
+
+// Call the function with the provided arguments
+parseCompiledFile(inputFile, outputFolder);
