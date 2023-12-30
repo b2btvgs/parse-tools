@@ -18,7 +18,8 @@ const compileFiles = (dirPath, outputFile) => {
         // Check if the file is a .js or .json file
         if (filePath.endsWith(".js") || filePath.endsWith(".json")) {
           const fileContent = fs.readFileSync(filePath, "utf8");
-          const relativePath = path.relative(__dirname, filePath);
+          // Calculate the path relative to the dirPath instead of __dirname
+          const relativePath = path.relative(dirPath, filePath);
           const fileType = filePath.endsWith(".js") ? "javascript" : "json";
 
           compiledContent += `${START_FILE} ${relativePath} ${fileType}\n\n${fileContent}\n${END_FILE}\n\n`;

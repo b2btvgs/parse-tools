@@ -1,0 +1,24 @@
+
+exports.createImage = async (event) => {
+  // Direct CRUD operations with DynamoDB, S3, etc.
+  // console.log("Creating image:", event);
+  console.log(
+    `PMM - SF - image-manager-delegate.js -- createImage initiated - event is: ${JSON.stringify(
+      event
+    )}`
+  );
+  const result = {
+    data: { id: "0001", name: "record001" },
+    message: `image-manager-delegate.js - createImage successfully concluded`,
+  };
+  console.log(
+    `PMM - SF - core/delegates/image-manager-delegate.js -- now returning result of: ${JSON.stringify(
+      result
+    )}`
+  );
+  return result;
+  // Return response or perform operations
+};
+
+// Define other CRUD operations similarly
+

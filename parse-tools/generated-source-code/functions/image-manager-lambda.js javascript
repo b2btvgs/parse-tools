@@ -1,0 +1,35 @@
+
+const imageManagerService = require("./core/services/image-manager-service");
+// const imageManagerService = require("./image-manager-service");
+
+exports.handler = async (event) => {
+  console.log(
+    `PMM - SF - image-manager-lambda.js -- handler initiated - event is: ${JSON.stringify(
+      event
+    )}`
+  );
+
+  switch (event.operationType) {
+    case "CREATE":
+      if (event.entityType === "IMAGE") {
+        console.log(
+          `PMM - SF - image-manager-lambda.js -- handler initiated - event.entityType is: ${JSON.stringify(
+            event.entityType
+          )}`
+        );
+        const result = await imageManagerService.createImage(event);
+        console.log(
+          `PMM - SF - Lambda Returning to FE - result is: ${JSON.stringify(
+            result
+          )}`
+        );
+        return result;
+        // return imageManagerService.createImage(event);
+      }
+      break;
+    // Handle other cases (UPDATE, DELETE, GET, LIST) similarly
+    default:
+      throw new Error(`Unknown operation: ${event.operationType}`);
+  }
+};
+

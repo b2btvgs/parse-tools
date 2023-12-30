@@ -14,19 +14,44 @@ const parseCompiledFile = (inputFile, outputFolder) => {
   let fileData = "";
   let isInFile = false;
 
+  // Resolve the absolute path of the output folder
+  const absoluteOutputFolder = path.resolve(outputFolder);
+  console.log(
+    `PMM - SF - absoluteOutputFolder is: ${JSON.stringify(
+      absoluteOutputFolder
+    )}`
+  );
+
+  // Create the output folder if it doesn't exist
+  if (!fs.existsSync(absoluteOutputFolder)) {
+    // console.log(`Creating output folder: ${absoluteOutputFolder}`);
+    fs.mkdirSync(absoluteOutputFolder, { recursive: true });
+  }
+
   for (const line of lines) {
     if (line.startsWith(START_FILE)) {
       const parts = line.split(" ");
-      currentFile = parts[1];
+      // Update to handle relative paths correctly
+      currentFile = parts.slice(1).join(" "); // Joining back in case the path has spaces
       isInFile = true;
       fileData = "";
     } else if (line === END_FILE) {
       isInFile = false;
-      // Write file data to the output folder
-      const outputPath = path.join(outputFolder, currentFile);
-      fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-      fs.writeFileSync(outputPath, fileData);
-      console.log(`File written: ${outputPath}`);
+      // Construct the full path for the file
+      const fullPath = path.join(absoluteOutputFolder, currentFile);
+      console.log(
+        `PMM - SF - absoluteOutputFolder is: ${JSON.stringify(
+          absoluteOutputFolder
+        )}`
+      );
+      console.log(`PMM - SF - currentFile is: ${JSON.stringify(currentFile)}`);
+      console.log(`PMM - SF - fullPath is: ${JSON.stringify(fullPath)}`);
+
+      // Create directories as needed
+      fs.mkdirSync(path.dirname(fullPath), { recursive: true });
+      // Write the file data
+      fs.writeFileSync(fullPath, fileData);
+      console.log(`File written: ${fullPath}`);
     } else if (isInFile) {
       fileData += line + "\n";
     }
@@ -48,6 +73,7 @@ const inputFile = process.argv[2];
 let outputFolder = ".";
 if (process.argv.length === 4 && process.argv[3].startsWith("OUTPUTFOLDER=")) {
   outputFolder = process.argv[3].split("=")[1];
+  // console.log(`PMM - SF - outputFolder is: ${JSON.stringify(outputFolder)}`);
 }
 
 // Call the function with the provided arguments

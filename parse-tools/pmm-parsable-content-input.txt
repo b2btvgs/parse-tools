@@ -1,6 +1,6 @@
 ***begin-file-set***
 
-start ../../image-manager-2024-12-24-v03/src/functions/core/delegates/image-manager-delegate.js javascript
+start ./image-manager-2024-12-24-v03/src/functions/core/delegates/image-manager-delegate.js javascript
 
 exports.createImage = async (event) => {
   // Direct CRUD operations with DynamoDB, S3, etc.
@@ -27,7 +27,7 @@ exports.createImage = async (event) => {
 
 end
 
-start ../../image-manager-2024-12-24-v03/src/functions/core/services/image-manager-service.js javascript
+start ./image-manager-2024-12-24-v03/src/functions/core/services/image-manager-service.js javascript
 
 const imageManagerDelegate = require("../delegates/image-manager-delegate");
 
@@ -46,7 +46,7 @@ exports.createImage = async (event) => {
 
 end
 
-start ../../image-manager-2024-12-24-v03/src/functions/image-manager-lambda.js javascript
+start ./image-manager-2024-12-24-v03/src/functions/image-manager-lambda.js javascript
 
 const imageManagerService = require("./core/services/image-manager-service");
 // const imageManagerService = require("./image-manager-service");

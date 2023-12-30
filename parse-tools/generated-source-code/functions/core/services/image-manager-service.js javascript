@@ -1,0 +1,16 @@
+
+const imageManagerDelegate = require("../delegates/image-manager-delegate");
+
+exports.createImage = async (event) => {
+  // Business logic here
+  console.log(
+    `PMM - SF - core/services/image-manager-service.js -- createImage initiated - event is: ${JSON.stringify(
+      event
+    )}`
+  );
+  return imageManagerDelegate.createImage(event);
+  // Delegate to CRUD operations
+};
+
+// Define other operations (update, delete, etc.) similarly
+
